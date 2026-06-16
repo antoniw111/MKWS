@@ -28,8 +28,8 @@ współdzielony wolumin `docker_root/`.
 | `detonation_validation.py` | TOA z sond + obliczenia Cantery (szok zamrożony, CJ) |
 | `raport_detonacja.tex` | raport (LaTeX, `pdflatex`) |
 | `raport_detonacja.pdf` | skompilowany raport |
-| `fig_pt.pdf`, `fig_xt.pdf` | wykresy ciśnienia i diagram x–t |
-| `przed_zapl_*.png`, `po_zapl_*.png` | pole temperatury przy klinie (przed/po zapłonie) |
+| `assets/fig_pt.pdf`, `assets/fig_xt.pdf` | wykresy ciśnienia i diagram x–t |
+| `assets/przed_zapl_*.png`, `assets/po_zapl_*.png` | pole temperatury przy klinie (przed/po zapłonie) |
 | `video_5fps.avi` | animacja przebiegu symulacji z ParaView (5 fps) |
 
 ### Animacja
@@ -64,9 +64,13 @@ Skrypt wypisuje wyniki na konsolę i zapisuje `walidacja_wyniki.csv`.
 > **Cantera 3.x** używa mechanizmów `.yaml` (np. `gri30.yaml`) — format `.cti`
 > został usunięty.
 
-## Wyniki (przypadek 15% H₂, T₀ = 300 K)
+## Wyniki (przypadek 15% H₂, T₀ = 293 K, P₀ = 1 bar)
 
-- Fala padająca: `W = 564 m/s`, `M = 1,50`, `P₂ = 2,54 bar` (≈ plateau CFD ~2,5 bar), `u_p = 263 m/s`
-- Detonacja: `D_CJ = 1516 m/s`, **`D_lab = 1261 m/s`** vs CFD `1194–1319 m/s`
+Warunki początkowe CFD: sekcja napędzająca 5,725 bar, napędzana (testowa) 1 bar,
+T = 293 K w całej domenie.
+
+- Fala padająca: `W = 564 m/s`, `M = 1,52`, `P₂ = 2,54 bar` (≈ plateau CFD ~2,5 bar), `u_p = 268 m/s`
+- Detonacja: `D_CJ = 1516 m/s`, **`D_lab = 1256 m/s`** vs CFD `1194–1319 m/s` (średnio ~1257)
+- Wynik CJ jest niezależny od mechanizmu (gri30 vs h2o2 < 0,6%) — opiera się na równowadze, nie na kinetyce.
 
 Pełen opis metodyki i dyskusja — w [`raport_detonacja.pdf`](raport_detonacja.pdf).
