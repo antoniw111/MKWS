@@ -18,7 +18,7 @@ import cantera as ct
 CSV    = "p_combined_probes.csv"          # plik z sondami (eksport ParaView)
 MECH   = "gri30.yaml"                      # mechanizm (Cantera 3.x -> .yaml!)
 X      = "H2:0.15 O2:0.1785 N2:0.6715"     # 15% H2 molowo w powietrzu (O2:N2=0.21:0.79)
-T0     = 300.0                             # temperatura napelnienia [K]  <-- POTWIERDZ
+T0     = 293.0                             # temperatura napelnienia [K]
 P0     = 102423.0                          # cisnienie napelnienia [Pa] (z danych)
 
 # wspolrzedne x sond na osi (y=0.0453) + sonda przy klinie
