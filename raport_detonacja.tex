@@ -8,6 +8,7 @@
 \usepackage{amsmath,amssymb}
 \usepackage{siunitx}
 \usepackage{graphicx}
+\graphicspath{{assets/}}
 \usepackage{booktabs}
 \usepackage{caption}
 \usepackage{subcaption}
@@ -20,7 +21,7 @@
 
 \title{\vspace{-1.5em}Walidacja prędkości detonacji w rurze uderzeniowej:\\
 porównanie symulacji CFD z analizą termochemiczną (Cantera)}
-\author{Antoni}
+\author{Antoni Wiśniewski}
 \date{\today}
 
 \begin{document}
@@ -41,12 +42,23 @@ na~wierzchołku (refleksja Macha z~punktem potrójnym) prowadzi do~lokalnego
 zapłonu i~uformowania się detonacji propagującej w~kierunku przeciwnym.
 
 \section{Opis przypadku}
-Mieszanina o~składzie molowym $\mathrm{H_2}:\mathrm{O_2}:\mathrm{N_2}
-=0{,}15:0{,}1785:0{,}6715$ (15\% wodoru w~powietrzu) wypełnia kanał
-o~ciśnieniu początkowym $P_0=\SI{1,024}{bar}$ i~temperaturze
-$T_0=\SI{293}{\kelvin}$. Pole ciśnienia rejestrowano w~sondach
-rozmieszczonych wzdłuż osi kanału ($y=\SI{0,0453}{\meter}$) oraz przy
-wierzchołku klina. Współrzędne $x$ sond osiowych zestawiono
+Domenę CFD stanowi rura uderzeniowa podzielona membraną na~dwie sekcje
+o~różnym ciśnieniu początkowym; ich rozprężenie po~rozerwaniu membrany
+generuje falę uderzeniową. Warunki początkowe symulacji (jednolita
+temperatura $T=\SI{293}{\kelvin}$ w~całej domenie) są następujące:
+\begin{itemize}
+\item \textbf{sekcja napędzająca} (wysokociśnieniowa): $p=\SI{5,725}{bar}$;
+\item \textbf{sekcja napędzana} (testowa): $p=P_0=\SI{1}{bar}$,
+wypełniona badaną mieszaniną wodorowo-powietrzną.
+\end{itemize}
+Po~rozerwaniu membrany powstaje fala uderzeniowa propagująca w~sekcję
+napędzaną ku~klinowi. Mieszanina o~składzie molowym
+$\mathrm{H_2}:\mathrm{O_2}:\mathrm{N_2}=0{,}15:0{,}1785:0{,}6715$
+(15\% wodoru w~powietrzu, $\varphi\approx0{,}42$) stanowi gaz testowy,
+a~stan napełnienia ($P_0=\SI{1}{bar}$, $T_0=\SI{293}{\kelvin}$) jest
+zarazem stanem~1 w~analizie termochemicznej. Pole ciśnienia rejestrowano
+w~sondach rozmieszczonych wzdłuż osi kanału ($y=\SI{0,0453}{\meter}$) oraz
+przy~wierzchołku klina. Współrzędne $x$ sond osiowych zestawiono
 w~tabeli~\ref{tab:probes}.
 
 \begin{table}[h]
@@ -160,14 +172,14 @@ wielkość & wartość & źródło \\
 prędkość fali $W$ & \SI{564}{\meter\per\second} & CFD (TOA) \\
 prędkość dźwięku $a_1$ & \SI{371}{\meter\per\second} & Cantera \\
 liczba Macha $M$ & 1,52 & Cantera \\
-ciśnienie za~czołem $P_2$ & \SI{2,60}{bar} & Cantera \\
+ciśnienie za~czołem $P_2$ & \SI{2,54}{bar} & Cantera \\
 temperatura za~czołem $T_2$ & \SI{391}{\kelvin} & Cantera \\
 prędkość gazu $u_p$ & \SI{268}{\meter\per\second} & Cantera \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Obliczone ciśnienie za~falą ($P_2=\SI{2,60}{bar}$) pokrywa się z~poziomem
+Obliczone ciśnienie za~falą ($P_2=\SI{2,54}{bar}$) pokrywa się z~poziomem
 plateau rejestrowanym w~sondach~2 i~3 ($\approx\SI{2,5}{bar}$), co~stanowi
 pierwszą, niezależną weryfikację zarówno pomiaru prędkości, jak i~modelu
 termochemicznego.
@@ -283,7 +295,7 @@ produktów, wspólna dla~obu mechanizmów.
 \begin{enumerate}
 \item Implementację obliczeń detonacji CJ w~Canterze zwalidowano na~mieszaninie
 stechiometrycznej (\SI{1969}{} vs.~\SI{1968}{\meter\per\second}).
-\item Stan za~falą padającą obliczony w~Canterze ($P_2=\SI{2,60}{bar}$) jest
+\item Stan za~falą padającą obliczony w~Canterze ($P_2=\SI{2,54}{bar}$) jest
 zgodny z~plateau ciśnienia z~CFD ($\approx\SI{2,5}{bar}$).
 \item Zmierzona prędkość detonacji (\SIrange{1194}{1319}{\meter\per\second})
 zgadza się z~wartością teoretyczną w~układzie laboratorium
@@ -291,9 +303,5 @@ zgadza się z~wartością teoretyczną w~układzie laboratorium
 \item Wyniki potwierdzają poprawność symulacji CFD oraz samopodtrzymujący się,
 choć~marginalny, charakter detonacji w~rozpatrywanej mieszaninie.
 \end{enumerate}
-
-\paragraph{Uwaga.} Obliczenia przyjmują temperaturę napełnienia
-$T_0=\SI{293}{\kelvin}$; ciśnienie $P_0=\SI{1,024}{bar}$ odczytano
-bezpośrednio z~danych. Zmiana $T_0$ wpływa na~wszystkie wielkości pochodne.
 
 \end{document}

@@ -19,7 +19,7 @@ CSV    = "p_combined_probes.csv"          # plik z sondami (eksport ParaView)
 MECH   = "gri30.yaml"                      # mechanizm (Cantera 3.x -> .yaml!)
 X      = "H2:0.15 O2:0.1785 N2:0.6715"     # 15% H2 molowo w powietrzu (O2:N2=0.21:0.79)
 T0     = 293.0                             # temperatura napelnienia [K]
-P0     = 102423.0                          # cisnienie napelnienia [Pa] (z danych)
+P0     = 100000.0                          # cisnienie napelnienia [Pa] = 1 bar
 
 # wspolrzedne x sond na osi (y=0.0453) + sonda przy klinie
 XPROBE = {1: 1.096, 2: 1.346, 3: 1.594, 4: 1.722, 5: 1.846, 6: 1.92718}
