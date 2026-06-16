@@ -10,6 +10,8 @@
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{caption}
+\usepackage{subcaption}
+\usepackage{placeins}
 \usepackage{microtype}
 \usepackage[hidelinks]{hyperref}
 
@@ -23,22 +25,6 @@ porównanie symulacji CFD z analizą termochemiczną (Cantera)}
 
 \begin{document}
 \maketitle
-
-\begin{abstract}
-\noindent
-W~pracy przedstawiono walidację symulacji CFD detonacji wodorowo-powietrznej
-w~rurze uderzeniowej z~klinem, inicjowanej przez ogniskowanie fali na~wierzchołku
-klina (refleksja Macha). Prędkości fali padającej oraz detonacji wyznaczono
-z~sygnałów ciśnienia w~sondach metodą czasu dotarcia (TOA), a~ich teoretyczne
-odpowiedniki obliczono w~programie Cantera: stan za~falą uderzeniową
-(model szoku zamrożonego) wraz z~prędkością gazu oraz prędkość detonacji
-Chapmana--Jougueta (równowagowy Hugoniot). Uzyskano zgodność na~dwóch
-niezależnych płaszczyznach: ciśnienie za~falą padającą ($\SI{2,54}{bar}$ wg~Cantery
-vs.~$\approx\SI{2,5}{bar}$ z~CFD) oraz prędkość detonacji w~układzie laboratorium
-($\SI{1261}{\meter\per\second}$ wg~teorii vs.~$\SIrange{1194}{1319}{\meter\per\second}$
-z~CFD). Wykazano, że poprawne porównanie wymaga uwzględnienia prędkości gazu
-za~falą padającą.
-\end{abstract}
 
 \section{Wprowadzenie i cel}
 Celem pracy jest niezależna walidacja wyników symulacji CFD detonacji
@@ -77,6 +63,28 @@ $x$ [\si{\meter}] & 1,096 & 1,346 & 1,594 & 1,722 & 1,846 & 1,927 \\
 \end{table}
 
 \section{Metodyka}
+
+\subsection{Środowisko obliczeniowe (Docker)}
+Całość obliczeń przeprowadzono w~dwóch konteneryzowanych usługach Docker,
+zarządzanych przez~\texttt{docker compose} i~współdzielących jeden wolumin
+danych (\texttt{docker\_root}), co~zapewnia powtarzalność i~niezależność
+od~konfiguracji systemu gospodarza:
+\begin{itemize}
+\item \textbf{\texttt{openfoam}} --- symulacja CFD. Obraz oparty na~leciwym
+OpenFOAM~2.1.1 (Ubuntu~14.04) z~dobudowanym solverem \texttt{ddtFoam}
+(model DDT wg~Ettnera). Starsza wersja OpenFOAM jest wymagana ze~względu
+na~zgodność z~kodem solvera; konteneryzacja pozwala uruchomić to~archaiczne
+środowisko na~współczesnym systemie bez~konfliktów zależności.
+\item \textbf{\texttt{cantera}} --- analiza termochemiczna. Obraz oparty
+na~\texttt{python:3.14-slim} z~biblioteką Cantera~3.2.0 (oraz SDToolbox).
+W~tym~kontenerze uruchamiany jest skrypt walidacyjny liczący stan
+za~falą uderzeniową i~prędkość detonacji CJ.
+\end{itemize}
+Usługi uruchamia się poleceniem \texttt{docker compose up}, a~obliczenia
+wykonuje wewnątrz odpowiedniego kontenera
+(\texttt{docker compose exec openfoam}~/~\texttt{cantera}). Wyniki CFD
+(eksport sond z~ParaView) trafiają przez~wspólny wolumin do~kontenera
+Cantery, gdzie~następuje analiza.
 
 \subsection{Pomiar prędkości fal z~CFD (metoda TOA)}
 Prędkość czoła fali wyznaczono z~różnicy czasów dotarcia (\emph{time of arrival})
@@ -168,8 +176,7 @@ termochemicznego.
 \centering
 \includegraphics[width=0.82\linewidth]{fig_pt.pdf}
 \caption{Przebiegi ciśnienia w~sondach (skala logarytmiczna). Widoczne plateau
-za~falą padającą ($\approx\SI{2,5}{bar}$) oraz piki detonacji (sondy 4--6).
-Detonacja zanika między sondą~4 a~3.}
+za~falą padającą ($\approx\SI{2,5}{bar}$) oraz piki detonacji (sondy 4--6).}
 \label{fig:pt}
 \end{figure}
 
@@ -178,9 +185,37 @@ Detonacja inicjuje się przy~wierzchołku klina (piki ciśnienia
 \SIrange{127}{237}{bar} w~sondach przyklinowych) i~propaguje w~kierunku $-x$.
 Zmierzona prędkość wynosi \SI{1194}{\meter\per\second} na~odcinku klin$\to$5
 (front jeszcze przesterowany po~inicjacji) oraz \SI{1319}{\meter\per\second}
-na~odcinku 5$\to$4 (samopodtrzymująca się propagacja). Detonacja zanika
-między sondą~4 a~3, co~jest typowe dla~ubogiej mieszaniny blisko granicy
-detonowalności.
+na~odcinku 5$\to$4 (samopodtrzymująca się propagacja).
+
+Proces inicjacji ilustruje rys.~\ref{fig:zaplon}: pole temperatury
+(z~widoczną w~dolnej połowie strukturą gradientów gęstości) tuż~przed
+ogniskowaniem fali na~wierzchołku klina oraz krótko po~zapłonie, gdy~przy
+wierzchołku tworzy się gorący obszar produktów ($\approx\SI{2400}{\kelvin}$)
+i~czoło detonacji o~widocznej strukturze komórkowej. Do raportu jest też dołączona animacja z oprogramowania ParaView, ilustrująca cały proces.
+
+\begin{figure}[p]
+\centering
+\begin{subfigure}{\linewidth}
+\centering
+\includegraphics[width=\linewidth]{przed_zapl_0_001055.png}
+\caption{przed zapłonem, $t=\SI{1,055}{ms}$}
+\label{fig:przed}
+\end{subfigure}
+
+\vspace{0.5em}
+
+\begin{subfigure}{\linewidth}
+\centering
+\includegraphics[width=\linewidth]{po_zapl_0_00108.png}
+\caption{po~zapłonie, $t=\SI{1,08}{ms}$}
+\label{fig:po}
+\end{subfigure}
+\caption{Pole temperatury $T$ przy~wierzchołku klina przed~zapłonem
+i~po~zapłonie (różnica czasu $\approx\SI{25}{\micro\second}$). Refleksja
+Macha ogniskuje falę na~wierzchołku, prowadząc do~lokalnego zapłonu
+i~uformowania detonacji.}
+\label{fig:zaplon}
+\end{figure}
 
 Detonacja propaguje w~gaz uprzednio sprężony i~wprawiony w~ruch przez~falę
 padającą, dlatego prędkość CJ obliczono dla~stanu za~tą falą. Przejście
@@ -216,6 +251,7 @@ propagacji: fala padająca w~kierunku $+x$, detonacja w~kierunku $-x$.}
 \label{fig:xt}
 \end{figure}
 
+\FloatBarrier
 \section{Dyskusja}
 Teoretyczna prędkość detonacji w~układzie laboratorium
 ($\SI{1261}{\meter\per\second}$) bardzo dobrze zgadza się z~pomiarem CFD
@@ -231,11 +267,6 @@ wynikającej z~kierunkowej zgodności ruchu gazu i~przeciwnego kierunku
 propagacji detonacji, domyka bilans. Pokazuje to, że~wielkością właściwą
 do~bezpośredniego porównania z~pomiarem czoła nie jest sama prędkość fali,
 lecz prędkość fali w~układzie ruchomego gazu.
-
-Zanik detonacji między sondami~4 a~3, przy~jednoczesnej zdolności do~inicjacji
-poprzez ogniskowanie na~klinie, jest spójny z~marginalnym charakterem
-mieszaniny ($\varphi\approx0{,}42$): bez~wzmocnienia geometrycznego fala nie
-podtrzymuje samodzielnej propagacji.
 
 \section{Wnioski}
 \begin{enumerate}
